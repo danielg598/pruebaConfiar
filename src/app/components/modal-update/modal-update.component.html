@@ -1,0 +1,19 @@
+<div class="bg-white h-[600px] w-full flex items-center justify-center p-4">
+    
+    <!-- <div class=" grid grid-cols-5 gap-3 w-full">
+        <input class="bg-slate-200" type="text" [value]="actor.actorId">
+        <input class="bg-slate-200" type="text" [value]="actor.firstName">
+        <input class="bg-slate-200" type="text" [value]="actor.lastName">
+        <input class="bg-slate-200" type="text" [value]="actor.lastUpdate">
+        <button>actualizar</button>
+    </div> -->
+    <form [formGroup]="actorForm" (ngSubmit)="actualizar()">
+        <div class="bg-yellow-100 grid grid-cols-5 gap-3 w-full">
+          <input class="bg-slate-200" type="text" formControlName="actorId" placeholder="ID" [value]="actor.actorId">
+          <input class="bg-slate-200" type="text" formControlName="firstName" placeholder="Nombre" [value]="actor.firstName">
+          <input class="bg-slate-200" type="text" formControlName="lastName" placeholder="Apellido" [value]="actor.lastName">
+          <input class="bg-slate-200" type="text" formControlName="lastUpdate" placeholder="Última Actualización" [value]="actor.lastUpdate ">
+          <button type="submit">Actualizar</button>
+        </div>
+      </form>
+</div>
