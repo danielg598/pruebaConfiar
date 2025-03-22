@@ -1,13 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, OnInit } from '@angular/core';
 import { MySqlService } from '../services/my-sql.service';
-import { PostgrestService } from '../services/postgrest.service';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterOutlet } from '@angular/router';
 import { PortalModule } from '@angular/cdk/portal';
 import { ModalUpdateComponent } from '../components/modal-update/modal-update.component';
 import { OverlayService } from '../services/overlay.service';
-import { postgrest } from '../interfaces/postgrest';
 
 @Component({
   selector: 'app-tabla',
@@ -26,7 +24,6 @@ export class TablaComponent implements OnInit, AfterViewInit {
   @ViewChild('update') update: any;
 
   actor: any;
-
   data: any[] = [];
   headers: string[] = ["id", "nombre", "apellido", "fecha"];
   paginatedData: any[] = [];
@@ -34,16 +31,23 @@ export class TablaComponent implements OnInit, AfterViewInit {
   itemsPerPage: number = 10;
   totalPages: number = 0;
 
-  constructor(private postgrest: PostgrestService, private mySql: MySqlService, private overlay: OverlayService) {
+  constructor(private mySqlService: MySqlService, private overlay: OverlayService) {}
 
-  }
-  ngAfterViewInit(): void {
-  }
+  ngAfterViewInit(): void {}
+
   ngOnInit(): void {
-    this.postgrestFuntion();
+    this.loadMySqlData();
+  }
 
+  // Cargar datos desde MySQL
+  loadMySqlData() {
+    this.mySqlService.getCities().subscribe(res => {
+      this.data = res;
+      console.log('Datos recibidos:', res);
 
-
+      this.totalPages = Math.ceil(this.data.length / this.itemsPerPage);
+      this.loadPage();
+    });
   }
 
   // Cargar la página actual
@@ -69,62 +73,59 @@ export class TablaComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // Abrir modal para actualizar
   modalUpdate(row: any) {
-    const date = new Date();
-    const isoDate = date.toISOString().slice(0, 19);
     this.actor = row;
-    console.log(isoDate);
-    console.log(this.actor);
     this.overlay.openOverlay(this.update);
-
   }
 
-  onUpdate(row: any) {
-    console.log(row);
+  // Actualizar un autor
+  // onUpdate(row: any) {
+  //   this.mySqlService.updateCity(row.id, row).subscribe({
+  //     next: (response) => {
+  //       console.log('Autor actualizado correctamente', response);
+  //       this.loadMySqlData(); // Recargar datos después de actualizar
+  //     },
+  //     error: (error) => {
+  //       console.error('Error al actualizar el autor:', error);
+  //     }
+  //   });
+  // }
 
-    const date = new Date();
-    const isoDate = date.toISOString().slice(0, 19);  // Esto genera el formato 'YYYY-MM-DDTHH:mm:ss'
+  // Eliminar un autor
+  // onDelete(row: any) {
+  //   const id = row.id; // Suponiendo que el ID es la clave primaria
 
-    console.log(isoDate);
+  //   this.mySqlService.deleteCity(id).subscribe({
+  //     next: (response) => {
+  //       console.log('Autor eliminado correctamente', response);
 
-  }
+  //       // Eliminar del array localmente
+  //       this.data = this.data.filter(autor => autor.id !== id);
+  //       this.totalPages = Math.ceil(this.data.length / this.itemsPerPage);
+  //       this.loadPage();
+  //     },
+  //     error: (error) => {
+  //       console.error('Error al eliminar el autor:', error);
+  //     }
+  //   });
+  // }
 
-  // Emitir el objeto completo para eliminar
-  onDelete(row: postgrest) {
-    const actorDelete = row.actorId;
+  // Agregar un nuevo autor
+  // addNewCity(newCity: any) {
+  //   this.mySqlService.addCity(newCity).subscribe({
+  //     next: (response:any) => {
+  //       console.log('Autor agregado correctamente', response);
+  //       this.loadMySqlData(); // Recargar datos después de agregar
+  //     },
+  //     error: (error:any) => {
+  //       console.error('Error al agregar el autor:', error);
+  //     }
+  //   });
+  // }
 
-    this.postgrest.deleteActors(actorDelete).subscribe({
-      next: (response) => {
-        console.log('Actor deleted successfully', response);
-        // Aquí puedes hacer algo después de la eliminación, como actualizar la lista de actores.
-
-        // Elimina el actor del array localmente
-        this.data = this.data.filter(actor => actor.actorId !== actorDelete);
-
-        // Recalcular el total de páginas y cargar la nueva página
-        this.totalPages = Math.ceil(this.data.length / this.itemsPerPage);
-        this.loadPage();
-      },
-      error: (error) => {
-        console.error('Error occurred while deleting actor:', error);
-      }
-    });
-  }
-
-
+  // Obtener las claves del objeto para iterar en la tabla
   arrayKeys(obj: any): string[] {
     return Object.keys(obj);
   }
-
-  postgrestFuntion() {
-    this.postgrest.getActors().subscribe(res => {
-      this.data = res;
-      console.log(res);
-
-      this.totalPages = Math.ceil(this.data.length / this.itemsPerPage);
-      this.loadPage();
-
-    })
-  }
-
 }

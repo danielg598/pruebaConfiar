@@ -1,39 +1,29 @@
 <div class="w-full flex flex-col items-center justify-center">
-
-    <table class="w-1/2">
+    <table class="w-1/2 border border-collapse">
         <thead>
             <tr>
-                @for(header of headers; track header){
-                <th>{{ header }}</th>
-                }
+                <th *ngFor="let header of headers">{{ header }}</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            @for(row of paginatedData; track row){
-            <tr>
-                @for(key of arrayKeys(row); track key){
-
-                <td>{{ row[key] }}</td> <!-- Filas -->
-                }
+            <tr *ngFor="let row of paginatedData">
+                <td *ngFor="let key of arrayKeys(row)">{{ row[key] }}</td>
                 <td>
-                    <button class="bg-slate-500" (click)="modalUpdate(row)">Actualizar</button>
-
-                </td>
-                <td>
-                    <button class="bg-slate-500" (click)="onDelete(row)">Eliminar</button>
+                    <button class="bg-blue-500 text-white p-2 rounded" (click)="modalUpdate(row)">Actualizar</button>
+                    <!-- <button class="bg-red-500 text-white p-2 rounded ml-2" (click)="onDelete(row)">Eliminar</button> -->
                 </td>
             </tr>
-            }
         </tbody>
     </table>
 
-    <div class="flex justify-between w-1/2 mt-10">
-        <button class="text-orange-500 " (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+    <div class="flex justify-between w-1/2 mt-5">
+        <button class="text-orange-500" (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
         <span>Página {{ currentPage }} de {{ totalPages }}</span>
-        <button class="text-orange-500 " (click)="nextPage()" [disabled]="currentPage === totalPages">Siguiente</button>
+        <button class="text-orange-500" (click)="nextPage()" [disabled]="currentPage === totalPages">Siguiente</button>
     </div>
 </div>
 
-<ng-template cdk-portal #update="cdkPortal" class="flex justify-center items-center">
+<ng-template cdk-portal #update="cdkPortal">
     <app-modal-update [actor]="actor"></app-modal-update>
 </ng-template>

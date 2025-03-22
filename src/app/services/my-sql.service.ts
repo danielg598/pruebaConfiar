@@ -14,6 +14,6 @@ export class MySqlService {
   constructor(private http: HttpClient) { }
 
   getCities():Observable<any>{
-    return this.http.get<any>(`${this.URL}cities`);
+    return this.http.get<any>(`${this.URL}autores`);
   }
 }
